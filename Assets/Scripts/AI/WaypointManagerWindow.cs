@@ -18,6 +18,7 @@ class WaypointManagerWindow : EditorWindow
 	public Dictionary<Waypoint, bool> WaypointInfoExpanded = new Dictionary<Waypoint, bool>();
 	public Vector2 ScrollPos;
 	public bool ShowDeleteButton;
+	public bool ShowSelectButton;
 
 	private void OnGUI()
 	{
@@ -31,7 +32,9 @@ class WaypointManagerWindow : EditorWindow
 		UpdateWaypoints();
 
 		EditorGUILayout.PropertyField( obj.FindProperty( "WaypointRoot" ) );
+
 		ShowDeleteButton = EditorGUILayout.Toggle( "Show delete button", ShowDeleteButton );
+		ShowSelectButton = EditorGUILayout.Toggle( "Show select button", ShowSelectButton );
 
 		if ( WaypointRoot == null )
 		{
@@ -48,7 +51,7 @@ class WaypointManagerWindow : EditorWindow
 
 				if ( WaypointInfoExpanded[waypoint] )
 				{
-					
+
 					waypoint.name = EditorGUILayout.TextField( "Waypoint Name", waypoint.name );
 					waypoint.WaypointWidth = EditorGUILayout.Slider( "Waypoint Width", waypoint.WaypointWidth, 0, 10 );
 					waypoint.AllowGoBack = EditorGUILayout.Toggle( "Allow go back", waypoint.AllowGoBack );
@@ -57,11 +60,11 @@ class WaypointManagerWindow : EditorWindow
 					{
 						waypoint.MinPauseTime = EditorGUILayout.FloatField( "Min pause time (in sec)", waypoint.MinPauseTime );
 						waypoint.MaxPauseTime = EditorGUILayout.FloatField( "Max pause time (in sec)", waypoint.MaxPauseTime );
-						if(waypoint.MinPauseTime < 0 )
+						if ( waypoint.MinPauseTime < 0 )
 						{
 							waypoint.MinPauseTime = 0;
 						}
-						if(waypoint.MinPauseTime > waypoint.MaxPauseTime )
+						if ( waypoint.MinPauseTime > waypoint.MaxPauseTime )
 						{
 							waypoint.MaxPauseTime = waypoint.MinPauseTime;
 						}
@@ -76,6 +79,8 @@ class WaypointManagerWindow : EditorWindow
 						waypoint.NextWaypoints[i] = ( Waypoint )EditorGUILayout.ObjectField( $"Next Waypoint {( i + 1 )}", waypoint.NextWaypoints[i], typeof( Waypoint ), true );
 					}
 
+					if ( ShowSelectButton && GUILayout.Button( "Select Waypoint" ) )
+						Selection.activeGameObject = waypoint.gameObject;
 					if ( ShowDeleteButton && GUILayout.Button( "Delete Waypoint" ) )
 						DeleteWaypoint( waypoint );
 				}
