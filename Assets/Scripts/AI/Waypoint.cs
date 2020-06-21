@@ -11,7 +11,7 @@ public class Waypoint : MonoBehaviour
 	public int AdjacentWaypointCount = 0;
 
 	[Range(0,10)]
-	public float WaypointWidth = .5f;
+	public float WaypointWidth = 1.5f;
 
 	public bool AllowGoBack = false;
 	public bool PauseSpot = false;
@@ -36,12 +36,27 @@ public class Waypoint : MonoBehaviour
 		NextWaypoints.Remove( waypoint );
 	}
 
+	public Waypoint GetNextWaypoint(Waypoint lastWaypoint )
+	{
+		List<Waypoint> toChooseFrom = new List<Waypoint>( NextWaypoints );
+		if ( !AllowGoBack ) toChooseFrom.Remove( lastWaypoint );
+		//int randomIndex = Random.Range(0,toChooseFrom.Count)
+		return toChooseFrom[Random.Range( 0, toChooseFrom.Count )];
+	}
+
+	public void AddWaypoint(Waypoint waypoint )
+	{
+		NextWaypoints.Add( waypoint );
+		AdjacentWaypointCount = NextWaypoints.Count;
+	}
+
+	public float GetPauseTime()
+	{
+		return PauseSpot ? Random.Range( MinPauseTime, MaxPauseTime ) : 0;
+	}
+
 	public void Resize()
 	{
-		while(AdjacentWaypointCount > NextWaypoints.Count )
-		{
-			NextWaypoints.Add( null );
-		}
 		while(AdjacentWaypointCount < NextWaypoints.Count )
 		{
 			NextWaypoints.RemoveAt( NextWaypoints.Count - 1 );

@@ -76,7 +76,14 @@ class WaypointManagerWindow : EditorWindow
 
 					for ( int i = 0; i < waypoint.AdjacentWaypointCount; i++ )
 					{
-						waypoint.NextWaypoints[i] = ( Waypoint )EditorGUILayout.ObjectField( $"Next Waypoint {( i + 1 )}", waypoint.NextWaypoints[i], typeof( Waypoint ), true );
+						Waypoint nextWaypoint = null;
+						try
+						{
+							nextWaypoint = waypoint.NextWaypoints[i];
+						}
+						catch { }
+
+						waypoint.NextWaypoints[i] = ( Waypoint )EditorGUILayout.ObjectField( $"Next Waypoint {( i + 1 )}", nextWaypoint, typeof( Waypoint ), true );
 					}
 
 					if ( ShowSelectButton && GUILayout.Button( "Select Waypoint" ) )
@@ -101,6 +108,21 @@ class WaypointManagerWindow : EditorWindow
 
 	private void DrawButtons()
 	{
+		Waypoint[] selectedWaypoints = Selection.GetFiltered<Waypoint>( SelectionMode.Unfiltered );
+		if ( selectedWaypoints.Length > 1 && GUILayout.Button("Connect Selected Waypoints" ) )
+		{
+			for ( int i = 0; i < selectedWaypoints.Length; i++ )
+			{
+				var currentWaypoint = selectedWaypoints[i];
+				for ( int r = 0; r < selectedWaypoints.Length; r++ )
+				{
+					if ( !selectedWaypoints[r].Equals( currentWaypoint ) )
+					{
+						currentWaypoint.AddWaypoint( selectedWaypoints[r] );
+					}
+				}
+			}
+		}
 		if ( GUILayout.Button( "Create Waypoint" ) )
 		{
 			CreateWaypoint();
